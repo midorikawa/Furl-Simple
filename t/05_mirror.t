@@ -9,23 +9,30 @@ use Plack::Loader;
 use Plack::Request;
 my $storefile = "t/store/store_file";
 
-
+use Data::Dumper;
 
 test_tcp(
     client => sub {
         my $port = shift;
 
-        subtest 'getstore' => sub {
+        subtest 'mirror' => sub {
 			mkdir ("t/store", 0777) or die "Could not create dir: t/store/";
-            my $res_code = getstore( "http://127.0.0.1:$port/1", $storefile, [ 'Accept-Encoding' => 'gzip' ] );
+            my $res_code = mirror( "http://127.0.0.1:$port/1", $storefile );
 
-            is $res_code, 200;
+            is $res_code, 200, "first code";
 			ok -e $storefile;
 			
 			open my $fh, $storefile or die "Could not create t/store/store_file";
 			local $/ = undef;
 			my $content = <$fh>;
 			is $content, "200 OK", "file store content read";
+
+			
+			my ($minor_version, $code1, $message, $headers, $content1) = mirror("http://127.0.0.1:$port/1", $storefile);
+			# diag Dumper ($minor_version, $code1, $message, $headers, $content1);
+			is $code1, 200, "second code";
+			is $content1, undef, "second content";
+			
 			unlink $storefile;
 			rmdir "t/store";
         };
@@ -42,7 +49,7 @@ test_tcp(
             $req->path_info =~ m{/(\d+)$} or die;
             my $id = $1;
             if ($id == 1) {
-                return [ 200, [ 'Content-Length' => 6 ], ['200 OK'] ];
+                return [ 200, [ 'Content-Length' => 6,'Last-Modified' => 'Wed, 21 Jan 2004 19:51:30 GMT' ], ['200 OK'] ];
             }
         });
     }

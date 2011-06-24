@@ -1,13 +1,42 @@
 use strict;
+use warnings;
+use Furl::Simple;
+use Test::TCP;
 use Test::More;
-BEGIN { use_ok "Furl::Simple"; }
+use Test::Requires 'Plack::Loader', 'Plack::Request';
 
-my $url = "http://www.omakase.org/";
+use Plack::Loader;
+use Plack::Request;
+my $storefile = "t/store/store_file";
 
 
-my $code = getprint($url);
+
+test_tcp(
+    client => sub {
+        my $port = shift;
+
+        subtest 'getprint' => sub {
+
+            my $res_code = getprint( "http://127.0.0.1:$port/1" );
+
+            is $res_code, 200, "status 200";
+
+        };
 
 
-is $code, 200, "status code";
 
-done_testing;
+        done_testing;
+    },
+    server => sub {
+        my $port = shift;
+        Plack::Loader->auto(port => $port)->run(sub {
+            my $env = shift;
+            my $req = Plack::Request->new($env);
+            $req->path_info =~ m{/(\d+)$} or die;
+            my $id = $1;
+            if ($id == 1) {
+                return [ 200, [ 'Content-Length' => 6 ], ['200 OK'] ];
+            }
+        });
+    }
+);

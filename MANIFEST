@@ -19,5 +19,5 @@ t/01_head.t
 t/02_get.t
 t/03_getstore.t
 t/04_getprint.t
-t/05mirror.t
+t/05_mirror.t
 xt/pod.t
