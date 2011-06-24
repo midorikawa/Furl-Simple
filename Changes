@@ -1,4 +1,8 @@
 Revision history for Perl extension Furl::Simple
+0.02  Sat, 25 June 2011 00:41:18 +0900
+
+		stored file utime change correct.
+		depend HTTP::Date
 
 0.01  Fri Jun 24 16:21:17 2011
         - original version

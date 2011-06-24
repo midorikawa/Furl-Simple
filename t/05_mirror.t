@@ -49,7 +49,7 @@ test_tcp(
             $req->path_info =~ m{/(\d+)$} or die;
             my $id = $1;
             if ($id == 1) {
-                return [ 200, [ 'Content-Length' => 6,'Last-Modified' => 'Wed, 21 Jan 2004 19:51:30 GMT' ], ['200 OK'] ];
+                return [ 200, [ 'Content-Length' => 6, 'Last-Modified' => 'Mon, 13 Jun 2011 02:04:51 GMT' ], ['200 OK'] ];
             }
         });
     }
